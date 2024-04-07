@@ -1,24 +1,22 @@
 pipeline {
     agent any
+    tools {
+        nodejs "NodeJS_16.20.2"
+    }
     stages {
-        stage('打包') {
+        stage('检出代码') {
             steps {
-                script {
-                    docker.build("hello-node")
-                }
+                git branch: 'main', url: 'https://github.com/coder-cuizw/hello-node.git'
             }
         }
-        stage('测试') {
+        stage('安装依赖') {
             steps {
-                script {
-                    docker.run("hello-node", "npm test")
-                }
+                sh 'npm install'
             }
         }
-        stage('部署') {
+        stage('运行') {
             steps {
-                // 添加部署到生产环境的步骤
-                echo 'Deploying...'
+                sh 'nohup node app.js > app.log 2>&1 &'
             }
         }
     }
